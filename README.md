@@ -36,13 +36,6 @@
 - 输入：电平（complex array），效率（2/3）
 - 输出：符号（logical array）
 
-#### 距离（欧氏距离） `sym_dist`
-
-用于软判决
-
-- 输入：电平（complex array），效率（2/3），一组符号（logical array）
-- 输出：距离（double array）
-
 ### 信道 `transmit`
 
 - 输入：信号（complex array），信噪比（double）
@@ -63,14 +56,18 @@
 
 #### 编码 `crc_encode`
 
-- 输入：原符号（logical array），CRC多项式（logical array）
+会在序列末尾填 0，直到序列长度变为帧长度的整数倍。
+
+- 输入：原符号（logical array），CRC多项式（logical array），
+  帧长度（课件中为 25 * 8）
 - 输出：加 CRC 后符号（logical array）
 
 #### 解码 `crc_decode`
 
 25字节一组
 
-- 输入：加 CRC 后符号（logical array），CRC多项式（logical array）
+- 输入：加 CRC 后符号（logical array），CRC多项式（logical array），
+  帧长度（课件中为 25 * 8）
 - 输出：原符号（logical array），误块率（double）
 
 
