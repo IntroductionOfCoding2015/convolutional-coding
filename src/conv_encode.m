@@ -27,7 +27,7 @@ function [ symbols ] = conv_encode( original_symbols, ifHasEnd, efficiency, CRCp
 	end
 
 	if (ifHasEnd == 1)
-		symbols = [symbols'; 0; 0; 0];
+		symbols = [symbols'; zeros(efficiency, 1)];
 	else
 		symbols = symbols';
 	end
