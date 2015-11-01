@@ -1,4 +1,4 @@
-symbols = randi([0 1], 10, 1);
+symbols = randi([0 1], 1000, 1);
 trellis_2 = poly2trellis(4, [15, 17]);      % 1/2.
 trellis_3 = poly2trellis(4, [13, 15, 17]);  % 1/3.
 
