@@ -1,6 +1,10 @@
 function [ symbols ] = conv_encode( original_symbols, ifHasEnd, efficiency, CRCpoly )
 
-	crc_symbols = crc_encode(original_symbols, CRCpoly, 25*8);
+	if(any(CRCpoly))
+		crc_symbols = crc_encode(original_symbols, CRCpoly, 25*8);
+	else
+		crc_symbols = original_symbols;
+	end
 	crc_symbols = [0; 0; 0; crc_symbols];
 	L = length(crc_symbols);
 	symbols = [];
@@ -9,8 +13,8 @@ function [ symbols ] = conv_encode( original_symbols, ifHasEnd, efficiency, CRCp
 		A0 = (1, 1);
 		A1 = (1, 1);
 		A2 = (0, 1);
-		A3 = (1, 1);
-	else
+		A3 = (1, 1);			
+	elseif(efficiency == 3)
 		A0 = (1, 1, 1);
 		A1 = (0, 1, 1);
 		A2 = (1, 0, 1);
