@@ -5,6 +5,11 @@ function [ symbols ] = conv_encode( original_symbols, ifHasEnd, efficiency, CRCp
 	else
 		crc_symbols = original_symbols;
 	end
+
+	if(ifHasEnd)
+		crc_symbols = [crc_symbols; 0; 0; 0];
+	end
+
 	crc_symbols = [0; 0; 0; crc_symbols];
 	L = length(crc_symbols);
 	symbols = [];
@@ -26,10 +31,6 @@ function [ symbols ] = conv_encode( original_symbols, ifHasEnd, efficiency, CRCp
 		symbols = [symbols, y];
 	end
 
-	if (ifHasEnd == 1)
-		symbols = [symbols'; 0; 0; 0];
-	else
-		symbols = symbols';
-	end
-
+	symbols = symbols';
+	
 end
