@@ -10,27 +10,26 @@ function [ symbols ] = conv_encode( original_symbols, ifHasEnd, efficiency, CRCp
 	symbols = [];
 
 	if (efficiency == 2)
-		A0 = (1, 1);
-		A1 = (1, 1);
-		A2 = (0, 1);
-		A3 = (1, 1);			
+		A0 = [1, 1];
+		A1 = [1, 1];
+		A2 = [0, 1];
+		A3 = [1, 1];
 	elseif(efficiency == 3)
-		A0 = (1, 1, 1);
-		A1 = (0, 1, 1);
-		A2 = (1, 0, 1);
-		A3 = (1, 1, 1);
+		A0 = [1, 1, 1];
+		A1 = [0, 1, 1];
+		A2 = [1, 0, 1];
+		A3 = [1, 1, 1];
 	end
 
 	for i = 4: L
 		y = mod(crc_symbols(i)*A0+crc_symbols(i-1)*A1+crc_symbols(i-2)*A2+crc_symbols(i-3)*A3, 2);
 		symbols = [symbols, y];
-	end	
+	end
 
 	if (ifHasEnd == 1)
 		symbols = [symbols'; 0; 0; 0];
 	else
 		symbols = symbols';
 	end
-	
-end
 
+end
