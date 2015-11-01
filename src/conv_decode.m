@@ -38,7 +38,7 @@ end
 if ending
 	symbols = sym{1};
 else
-	symbols = sym{find(prev_dis==min(prev_dis))};
+	symbols = sym{prev_dis==min(prev_dis)};
 end
 
 if any(crc_poly)
