@@ -1,4 +1,4 @@
-function symbols = conv_rec( signal, efficiency, hard )
+function symbols = conv_decode( signal, efficiency, hard )
 
 if efficiency == 2
 	A = [1 1 0 1; 1 1 1 1]';
