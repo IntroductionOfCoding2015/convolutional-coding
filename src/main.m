@@ -22,20 +22,20 @@ for i = 1: length(PSNR)
 		signal_noCRC_2 = conv_send(dataFile, 1, 2, []);
 		signal_3 = conv_send(dataFile, 1, 3, CRC_poly);
 		signal_noCRC_3 = conv_send(dataFile, 1, 3, []);
-	
-		signal_2n = transmit(signal_2, PSNR);
-		signal_noCRC_2n = transmit(signal_noCRC_2, PSNR);
-		signal_3n = transmit(signal_3, PSNR);
-		signal_noCRC_3n = transmit(signal_noCRC_3, PSNR);
-		
-		[file_dec_hard2, ~] = conv_rec(signal_2n, 1, 2, CRC_poly, 1); 
+
+		signal_2n = transmit(signal_2, PSNR(i));
+		signal_noCRC_2n = transmit(signal_noCRC_2, PSNR(i));
+		signal_3n = transmit(signal_3, PSNR(i));
+		signal_noCRC_3n = transmit(signal_noCRC_3, PSNR(i));
+
+		[file_dec_hard2, ~] = conv_rec(signal_2n, 1, 2, CRC_poly, 1);
 		difference = xor(file_dec_hard2, dataFile);
 		error_ratio_hard2(i) = error_ratio_hard2(i) + sum(difference)/length(dataFile);
 		if(sum(difference) ~= 0)
 			fail_ratio_hard2(i) = fail_ratio_hard2(i) + 1;
 		end
 
-		[file_dec_hard3, ~] = conv_rec(signal_3n, 1, 3, CRC_poly, 1);		
+		[file_dec_hard3, ~] = conv_rec(signal_3n, 1, 3, CRC_poly, 1);
 		difference = xor(file_dec_hard3, dataFile);
 		error_ratio_hard3(i) = error_ratio_hard3(i) + sum(difference)/length(dataFile);
 		if(sum(difference) ~= 0)
@@ -49,7 +49,7 @@ for i = 1: length(PSNR)
 			fail_ratio_soft2(i) = fail_ratio_soft2(i) + 1;
 		end
 
-		[file_dec_soft3, ~] = conv_rec(signal_3n, 1, 3, CRC_poly, 0);		
+		[file_dec_soft3, ~] = conv_rec(signal_3n, 1, 3, CRC_poly, 0);
 		difference = xor(file_dec_soft3, dataFile);
 		error_ratio_soft3(i) = error_ratio_soft3(i) + sum(difference)/length(dataFile);
 		if(sum(difference) ~= 0)
@@ -82,11 +82,11 @@ end
 
 c = jet(4);
 
-figure; 
+figure;
 plot(PSNR, block_err_hard2, 'Color', c(1, :)); hold on;
 plot(PSNR, block_err_hard3, 'Color', c(2, :)); hold on;
 plot(PSNR, block_err_soft2, 'Color', c(3, :)); hold on;
-plot(PSNR, block_err_soft3, 'Color', c(4, :)); 
+plot(PSNR, block_err_soft3, 'Color', c(4, :));
 xlabel('PSNR(dB)'); ylabel('block error ratio');
 legend('1/2, hard dicision', '1/3, hard dicision', '1/2, soft dicision', '1/3, soft dicision');
 
@@ -94,7 +94,7 @@ figure;
 plot(PSNR, error_ratio_hard2, 'Color', c(1, :)); hold on;
 plot(PSNR, error_ratio_hard3, 'Color', c(2, :)); hold on;
 plot(PSNR, error_ratio_soft2, 'Color', c(3, :)); hold on;
-plot(PSNR, error_ratio_soft3, 'Color', c(4, :)); 
+plot(PSNR, error_ratio_soft3, 'Color', c(4, :));
 xlabel('PSNR(dB)'); ylabel('bit error ratio (without CRC)');
 legend('1/2, hard dicision', '1/3, hard dicision', '1/2, soft dicision', '1/3, soft dicision');
 
@@ -102,6 +102,6 @@ figure;
 plot(PSNR, fail_ratio_hard2, 'Color', c(1, :)); hold on;
 plot(PSNR, fail_ratio_hard3, 'Color', c(1, :)); hold on;
 plot(PSNR, fail_ratio_soft2, 'Color', c(1, :)); hold on;
-plot(PSNR, fail_ratio_soft3, 'Color', c(1, :)); 
+plot(PSNR, fail_ratio_soft3, 'Color', c(1, :));
 xlabel('PSNR(dB)'); ylabel('fail\_to\_send\_file ratio');
 legend('1/2, hard dicision', '1/3, hard dicision', '1/2, soft dicision', '1/3, soft dicision');
