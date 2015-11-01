@@ -36,3 +36,7 @@ for i = 1:length(signal)
 end
 
 symbols = sym{1};
+
+if any(crc_poly)
+    [symbols, err_rate] = crc_decode(symbols, crc_poly, 25 * 8);
+end
