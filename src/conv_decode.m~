@@ -19,7 +19,9 @@ for i = 1:length(signal)
 				input = [tails(k,:), symbol];
 				output = mod(input * A,2);
 				idx = find(ismember(tails,input(end-2:end),'rows'));
-				d = conv_dis(output,signal(i),efficiency,hard);
+				if i==3 && k==1 && symbol==0
+					d = conv_dis(output,signal(i),efficiency,hard);
+				end
 				if dis(idx) < 0
 					dis(idx) = prev_dis(k) + d;
 					sym{idx} = [prev_sym{k}, symbol];
