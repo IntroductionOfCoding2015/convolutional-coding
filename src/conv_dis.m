@@ -5,7 +5,7 @@ if efficiency == 2
 else
 	symbols = [0 0 0; 0 0 1; 0 1 1; 0 1 0; 1 1 0; 1 1 1; 1 0 1; 1 0 0];
 end
-V = zeros(length(symbols));
+V = zeros(length(symbols), 1);
 for i = 1:2^efficiency
 	V(i) = exp(j*2*pi/2^efficiency*(i-1));
 end
