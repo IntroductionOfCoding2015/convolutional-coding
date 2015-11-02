@@ -19,14 +19,13 @@ error_ratio_soft2 = zeros(size(PSNR)); error_ratio_soft3 = zeros(size(PSNR));
 err_noEnd_hard2 = zeros(size(PSNR)); err_noEnd_hard3 = zeros(size(PSNR));
 
 for i = 1: length(PSNR)
-	for j = 1: 100
-		signal_2 = conv_send(dataFile, 1, 2, CRC_poly);
-		signal_noCRC_2 = conv_send(dataFile, 1, 2, []);
-		signal_noEnd_2 = conv_send(dataFile, 0, 2, []);
-		signal_3 = conv_send(dataFile, 1, 3, CRC_poly);
-		signal_noCRC_3 = conv_send(dataFile, 1, 3, []);
-		signal_noEnd_3 = conv_send(dataFile, 0, 3, []);		
-
+	signal_2 = conv_send(dataFile, 1, 2, CRC_poly);
+	signal_noCRC_2 = conv_send(dataFile, 1, 2, []);
+	signal_noEnd_2 = conv_send(dataFile, 0, 2, []);
+	signal_3 = conv_send(dataFile, 1, 3, CRC_poly);
+	signal_noCRC_3 = conv_send(dataFile, 1, 3, []);
+	signal_noEnd_3 = conv_send(dataFile, 0, 3, []);		
+	for j = 1: 100		
 		signal_2n = transmit(signal_2, PSNR(i));
 		signal_3n = transmit(signal_3, PSNR(i));
 		signal_noCRC_2n = transmit(signal_noCRC_2, PSNR(i));
