@@ -44,4 +44,6 @@ end
 
 if any(crc_poly)
     [symbols, err_rate] = crc_decode(symbols, crc_poly, 25 * 8);
+else
+    err_rate = 0;
 end
