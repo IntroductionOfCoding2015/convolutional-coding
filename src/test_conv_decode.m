@@ -2,6 +2,7 @@ LEN = 10;
 symbols = randi([0 1], LEN, 1);
 trellis_2 = poly2trellis(4, [15, 17]);      % 1/2.
 trellis_3 = poly2trellis(4, [13, 15, 17]);  % 1/3.
+PSNR = -10;
 
 assert_decode = @(signal, real_symbols, expected_symbols, description) ...
     assert(all(size(real_symbols) == size(expected_symbols)) && ...
@@ -13,8 +14,8 @@ assert_decode = @(signal, real_symbols, expected_symbols, description) ...
            mat2str(signal), mat2str(expected_symbols), mat2str(real_symbols));
 
 % No ending, no CRC, hard.
-signal_2 = sym_encode(convenc(symbols, trellis_2), 2);
-signal_3 = sym_encode(convenc(symbols, trellis_3), 3);
+signal_2 = transmit(sym_encode(convenc(symbols, trellis_2), 2), PSNR);
+signal_3 = transmit(sym_encode(convenc(symbols, trellis_3), 3), PSNR);
 code2 = sym_decode(signal_2, 2);
 code3 = sym_decode(signal_3, 3);
 
@@ -29,8 +30,8 @@ assert_decode(signal_3, ...
 
 % With ending, no CRC, hard.
 symbols_with_ending = [symbols; zeros(3, 1)];
-signal_2 = sym_encode(convenc(symbols_with_ending, trellis_2), 2);
-signal_3 = sym_encode(convenc(symbols_with_ending, trellis_3), 3);
+signal_2 = transmit(sym_encode(convenc(symbols_with_ending, trellis_2), 2), PSNR);
+signal_3 = transmit(sym_encode(convenc(symbols_with_ending, trellis_3), 3), PSNR);
 code2 = sym_decode(signal_2, 2);
 code3 = sym_decode(signal_3, 3);
 
