@@ -37,6 +37,7 @@ end
 
 if ending
 	symbols = sym{1}';
+    symbols = symbols(1:end-3);  % Remove ending.
 else
 	symbols = sym{find(prev_dis==min(prev_dis),1)}';
 end
