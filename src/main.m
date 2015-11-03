@@ -11,19 +11,17 @@ CRC_poly = [1; 1; 0; 0; 0; 0; 0; 0; 0; 1; 1; 1; 1]; % CRC_12: x^12+x^11+x^3+x^2+
 
 PSNR = -5: 0.5: 10; % dB
 % fail ratio
-fail_ratio_hard2 = zeros(size(PSNR)); fail_ratio_hard3 = zeros(size(PSNR));
-fail_ratio_soft2 = zeros(size(PSNR)); fail_ratio_soft3 = zeros(size(PSNR));
+fail_ratio_hard2 = zeros(size(PSNR));
+fail_ratio_soft2 = zeros(size(PSNR));
 
 for i = 1: length(PSNR)
 	% encode
 	% has end, no CRC
 	signal_noCRC_2 = conv_send(dataFile, 1, 2, []);
-	signal_noCRC_3 = conv_send(dataFile, 1, 3, []);
 	for j = 1: INTERATIONS
 
 		% transmit
 		signal_noCRC_2n = transmit(signal_noCRC_2, PSNR(i));
-		signal_noCRC_3n = transmit(signal_noCRC_3, PSNR(i));
 
 		% has end, no CRC, bit error ratio(error_ratio_...) and fail_to_send_file ratio(fail_ratio_...)
 		[file_dec_noCRC_hard2, ~] = conv_receive(signal_noCRC_2n, 1, 2, [], 1);
@@ -32,28 +30,16 @@ for i = 1: length(PSNR)
 			fail_ratio_hard2(i) = fail_ratio_hard2(i) + 1;
 		end
 
-		[file_dec_noCRC_hard3, ~] = conv_receive(signal_noCRC_3n, 1, 3, [], 1);
-		difference = xor(file_dec_noCRC_hard3, dataFile);
-		if(sum(difference) ~= 0)
-			fail_ratio_hard3(i) = fail_ratio_hard3(i) + 1;
-		end
-
 		[file_dec_noCRC_soft2, ~] = conv_receive(signal_noCRC_2n, 1, 2, [], 0);
 		difference = xor(file_dec_noCRC_soft2, dataFile);
 		if(sum(difference) ~= 0)
 			fail_ratio_soft2(i) = fail_ratio_soft2(i) + 1;
 		end
-
-		[file_dec_noCRC_soft3, ~] = conv_receive(signal_noCRC_3n, 1, 3, [], 0);
-		difference = xor(file_dec_noCRC_soft3, dataFile);
-		if(sum(difference) ~= 0)
-			fail_ratio_soft3(i) = fail_ratio_soft3(i) + 1;
-		end
 	end
 
 	% average of INTERATIONS times
-	fail_ratio_hard2(i) = fail_ratio_hard2(i)/INTERATIONS; fail_ratio_hard3(i) = fail_ratio_hard3(i)/INTERATIONS;
-	fail_ratio_soft2(i) = fail_ratio_soft2(i)/INTERATIONS; fail_ratio_soft3(i) = fail_ratio_soft3(i)/INTERATIONS;
+	fail_ratio_hard2(i) = fail_ratio_hard2(i)/INTERATIONS;
+	fail_ratio_soft2(i) = fail_ratio_soft2(i)/INTERATIONS;
 end
 
 % c = jet(4);
