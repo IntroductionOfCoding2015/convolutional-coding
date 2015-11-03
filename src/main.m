@@ -5,7 +5,7 @@ clc;
 dataFile = randi([0, 1], 1024*8, 1); % 1KB
 CRC_poly = [1; 1; 0; 0; 0; 0; 0; 0; 0; 1; 1; 1; 1]; % CRC_12: x^12+x^11+x^3+x^2+x+1
 
-PSNR = -10: 2.5: 40; % dB
+PSNR = -5: 1: 15; % dB
 % block error ratio
 block_err_hard2 = zeros(size(PSNR)); block_err_hard3 = zeros(size(PSNR));
 block_err_soft2 = zeros(size(PSNR)); block_err_soft3 = zeros(size(PSNR));
@@ -83,14 +83,15 @@ for i = 1: length(PSNR)
 
 	end
 
-	if(PSNR(i) >=0 && PSNR(i) <= 10)
+	if(PSNR(i) >=0 && PSNR(i) <= 5)
 		figure;
 		for k = 1: 40
 			dataFile_block = dataFile((k-1)*25*8+1: k*25*8);
 			recFile_block = file_dec_hard2((k-1)*25*8+1: k*25*8);
 			err_code = xor(dataFile_block, recFile_block);
 			subplot(5, 8, k); stem(err_code);
-		end
+        end
+        suptitle(['error map when PSNR = ', num2str(PSNR(i)), 'dB']);
 	end
 
 	% average of 10 times
