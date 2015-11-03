@@ -23,13 +23,19 @@ error_ratio_soft2 = zeros(size(PSNR)); error_ratio_soft3 = zeros(size(PSNR));
 err_noEnd_hard2 = zeros(size(PSNR)); err_noEnd_hard3 = zeros(size(PSNR));
 
 for i = 1: length(PSNR)
+	% encode
+	% has end, has CRC
 	signal_2 = conv_send(dataFile, 1, 2, CRC_poly);
-	signal_noCRC_2 = conv_send(dataFile, 1, 2, []);
-	signal_noEnd_2 = conv_send(dataFile, 0, 2, []);
 	signal_3 = conv_send(dataFile, 1, 3, CRC_poly);
+	% has end, no CRC
+	signal_noCRC_2 = conv_send(dataFile, 1, 2, []);
 	signal_noCRC_3 = conv_send(dataFile, 1, 3, []);
+	% no end, no CRC
+	signal_noEnd_2 = conv_send(dataFile, 0, 2, []);
 	signal_noEnd_3 = conv_send(dataFile, 0, 3, []);
 	for j = 1: INTERATIONS
+
+		% transmit
 		signal_2n = transmit(signal_2, PSNR(i));
 		signal_3n = transmit(signal_3, PSNR(i));
 		signal_noCRC_2n = transmit(signal_noCRC_2, PSNR(i));
@@ -37,6 +43,7 @@ for i = 1: length(PSNR)
 		signal_noEnd_2n = transmit(signal_noEnd_2, PSNR(i));
 		signal_noEnd_3n = transmit(signal_noEnd_3, PSNR(i));
 
+		% has end, has CRC, block error ratio(block_err_...)
 		[file_dec_hard2, block_err] = conv_receive(signal_2n, 1, 2, CRC_poly, 1);
 		block_err_hard2(i) = block_err_hard2(i) + block_err;
 
@@ -49,6 +56,7 @@ for i = 1: length(PSNR)
 		[file_dec_soft3, block_err] = conv_receive(signal_3n, 1, 3, CRC_poly, 0);
 		block_err_soft3(i) = block_err_soft3(i) + block_err;
 
+		% has end, no CRC, bit error ratio(error_ratio_...) and fail_to_send_file ratio(fail_ratio_...)
 		[file_dec_noCRC_hard2, ~] = conv_receive(signal_noCRC_2n, 1, 2, [], 1);
 		difference = xor(file_dec_noCRC_hard2, dataFile);
 		error_ratio_hard2(i) = error_ratio_hard2(i) + sum(difference)/length(dataFile);
@@ -77,6 +85,7 @@ for i = 1: length(PSNR)
 			fail_ratio_soft3(i) = fail_ratio_soft3(i) + 1;
 		end
 
+		% no end, no CRC, hard dicision only, bit error ratio(err_noEnd_hard2/3)
 		[file_dec_noEnd_hard2, ~] = conv_receive(signal_noEnd_2n, 0, 2, [], 1);
 		difference = xor(file_dec_noEnd_hard2, dataFile);
 		err_noEnd_hard2(i) = err_noEnd_hard2(i) + sum(difference)/length(dataFile);
