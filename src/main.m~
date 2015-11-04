@@ -2,25 +2,24 @@ close all;
 clear all;
 clc;
 
-INTERATIONS = 20;
+INTERATIONS = 10;
 
 
 load 5dBPSNRdata.mat dataFile % 1KB
 % dataFile = randi([0, 1], 1024*8, 1);
 CRC_poly = [1; 1; 0; 0; 0; 0; 0; 0; 0; 1; 1; 1; 1]; % CRC_12: x^12+x^11+x^3+x^2+x+1
 
-PSNR = 2: 0.5: 8; % dB
+PSNR = 0: 0.5: 10; % dB
 % fail ratio
 fail_ratio_hard2 = zeros(size(PSNR));
 fail_ratio_soft2 = zeros(size(PSNR));
 
-matlabpool(length(PSNR));
+matlabpool(20);
 parfor i = 1: length(PSNR)
 	% encode
 	% has end, no CRC
 	signal_noCRC_2 = conv_send(dataFile, 1, 2, []);
 	for j = 1: INTERATIONS
-		disp(['present iteration: ',num2str(j),'\tSNR value: ',num2str(i)]);
 
 		% transmit
 		signal_noCRC_2n = transmit(signal_noCRC_2, PSNR(i));
