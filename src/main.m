@@ -9,7 +9,7 @@ load 5dBPSNRdata.mat dataFile % 1KB
 % dataFile = randi([0, 1], 1024*8, 1);
 CRC_poly = [1; 1; 0; 0; 0; 0; 0; 0; 0; 1; 1; 1; 1]; % CRC_12: x^12+x^11+x^3+x^2+x+1
 
-PSNR = 2: 0.5: 8; % dB
+PSNR = 2: 0.5: 7.5; % dB
 % fail ratio
 fail_ratio_hard2 = zeros(size(PSNR));
 fail_ratio_soft2 = zeros(size(PSNR));
