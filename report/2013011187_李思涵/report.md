@@ -5,16 +5,153 @@
   <lisihan969@gmail.com>
 % \today
 
-#
-## 模块设计
+# API 设计 & 分工
 
-### 电平映射
+我们将任务分成了三份，其中我负责完成第二份。
 
-根据效率选取映射方式，将信号映射到复电平
+## Part I
 
-### 模拟信道
+### 编码器 `conv_encode`
 
-模拟 AWGN 信道，按照给定的信噪比加噪声
+包括二进制 1/2 和 1/3 效率卷积码
+
+- 输入：原符号（logical array），是否收尾（logical），效率（2/3），CRC多项式（logical array）
+- 输出：编码后符号（logical array）
+
+### 画图
+
+- 1/2, 1/3, 硬/软判决误比特率 - 信道信噪比
+- 10个典型误码图案
+- 文件传输失败率 - 信噪比
+- 文件整体差错率 - 信道信噪比
+- 信道发端/收端复基带星座图
+
+## Part II
+
+### 符号 - 电平映射
+
+1/2 效率使用 4PSK，1/8 效率使用 8PSK。
+
+#### 映射 `sym_encode`
+
+- 输入：符号（logical array），效率（2/3）
+- 输出：电平（complex array）
+
+#### 解映射（硬判决） `sym_decode`
+
+根据欧氏距离
+
+- 输入：电平（complex array），效率（2/3）
+- 输出：符号（logical array）
+
+### 信道 `transmit`
+
+- 输入：信号（complex array），信噪比（double）
+- 输出：加噪声后电平（complex array）
+
+### 发射函数 `conv_send`
+
+结合上面两个
+
+- 输入：原符号（logical array），是否收尾（logical），效率（2/3），CRC多项式（logical array）
+- 输出：电平（complex array）
+
+### 接收函数 `conv_receive`
+
+`conv_decode` 的别名。
+
+### CRC
+
+#### 编码 `crc_encode`
+
+会在序列末尾填 0，直到序列长度变为帧长度的整数倍。
+
+- 输入：原符号（logical array），CRC多项式（logical array），
+  帧长度（课件中为 25 * 8）
+- 输出：加 CRC 后符号（logical array）
+
+#### 解码 `crc_decode`
+
+25字节一组
+
+- 输入：加 CRC 后符号（logical array），CRC多项式（logical array），
+  帧长度（课件中为 25 * 8）
+- 输出：原符号（logical array），误块率（double）
+
+## Part III
+
+### 译码器 `conv_decode`
+
+欧氏距离
+
+硬判决，软判决
+
+包括二进制 1/2 和 1/3 效率卷积码
+
+- 输入：加噪声后电平（complex array），是否收尾（logical），效率（2/3），CRC多项式（logical array），硬判决（logical）
+- 输出：解码后符号（logical array），误块率（double）   
+
+# 模块实现
+
+以下列出了我负责部分的实现代码。
+
+## 符号 - 电平映射
+
+根据效率选取映射方式，将信号映射到复电平。为了方便软解码，1/2 效率使用 4PSK，1/8 效率使用 8PSK，并采用格雷码编码。理论星座图如图所示。
+
+![4PSK-8PSK](4PSK-8PSK.png)
+
+### 符号 ->  电平
+
+```matlab
+function signal = sym_encode(symbols, efficiency)
+    if efficiency == 2
+        gray = [0 1 3 2];
+        weight = [2; 1];
+    else
+        gray = [0 1 3 2 6 7 5 4];
+        weight = [4; 2; 1];
+    end
+
+    levels = 2^efficiency;
+    signal_num = floor(length(symbols) / efficiency);
+    signal = zeros(signal_num, 1);
+
+    for k = 1:signal_num
+        symbols((k-1)*efficiency+1:k*efficiency)';
+        num = symbols((k-1)*efficiency+1:k*efficiency)' * weight;
+        level = find(gray == num);
+        signal(k) = exp(j * (level - 1) * 2 * pi / levels);
+    end
+end
+```
+
+### 电平 -> 符号
+
+这里实现的电平 -> 符号映射是根据接受信号在复平面上的幅角来判定的。
+
+可以证明，这种判定方式和以欧拉距离判决等价。
+
+```matlab
+function symbols = sym_decode(signal, efficiency)
+    if efficiency == 2
+        gray = [0 1 3 2];
+    else
+        gray = [0 1 3 2 6 7 5 4];
+    end
+
+    levels = 2^efficiency;
+    signal = gray(mod(round(angle(signal) / (2 * pi / levels)), levels) + 1);
+
+    symbols = de2bi(signal, efficiency, 'left-msb')';
+    symbols = symbols(:);
+end
+```
+
+## 模拟信道
+
+使用 AWGN 信道，对复电平序列以一定的信噪比加上高斯白噪声。
+其中实部和虚部的噪声为独立同分布的高斯分布。
 
 ```matlab
 function noised_signal = transmit(signal, snr)
@@ -22,11 +159,14 @@ function noised_signal = transmit(signal, snr)
 end
 ```
 
-## p9 `crc_encode`
+## CRC
 
 选取多项式为 CRC12
 
 x^12 + x^11 + x^3 + x^2 + x + 1
+
+### CRC 编码
+
 
 首先在序列的末尾填 0，直到序列长度变为帧长度的整数倍。
 
@@ -55,19 +195,7 @@ function crced_symbols = crc_encode(symbols, crc_poly, frame_size)
 end
 ```
 
-## p11 `sym_encode`
-
-为了方便软解码，1/2 效率使用 4PSK，1/8 效率使用 8PSK。
-
-![4PSK-8PSK](4PSK-8PSK.png)
-
-## p12  `transmit`
-
-使用 AWGN 信道，对复电平序列以一定的信噪比加上高斯白噪声。
-
-其中实部和虚部的噪声为独立同分布的高斯分布。
-
-## p15 `crc_decode`
+### CRC 解码
 
 先根据给定帧长，将符号序列的各个帧分割开来。
 
@@ -114,7 +242,9 @@ end
 
 # 单元测试
 
-使用 Communications System Toolbox 中的 `poly2trellis`（描述卷积码）， `convenc`（卷机码编码）， `vitdec`（维特比解码），对编解码进行了单元测试。
+为了测试其他组员实现的卷积码编码/维特比译码的正确性，我编写了单元测试，使用
+Communications System Toolbox 中的 `poly2trellis`（描述卷积码），
+`convenc`（卷机码编码）， `vitdec`（维特比解码），对编解码进行了单元测试。
 
 ## `test_conv_encode.m`
 
@@ -208,3 +338,5 @@ assert_decode(signal_3, ...
               expected, ...
               'conv_decode, 1/3, with ending, no CRC, hard');
 ```
+
+# 实验结果
