@@ -17,6 +17,7 @@ error_ratio_soft2 = zeros(size(PSNR)); error_ratio_soft3 = zeros(size(PSNR));
 err_noEnd_hard2 = zeros(size(PSNR)); err_noEnd_hard3 = zeros(size(PSNR));
 
 for i = 1: length(PSNR)
+    disp(['PSNR = ', num2str(PSNR(i))]);
 	% encode
 	% has end, no CRC
 	signal_noCRC_2 = conv_send(dataFile, 1, 2, []);
@@ -59,16 +60,16 @@ for i = 1: length(PSNR)
 		err_noEnd_hard3(i) = err_noEnd_hard3(i) + sum(difference)/length(dataFile);
 	end
 
-	if(PSNR(i) >=0 && PSNR(i) <= 5)
-		figure;
-		for k = 1: 40
-			dataFile_block = dataFile((k-1)*25*8+1: k*25*8);
-			recFile_block = file_dec_hard2((k-1)*25*8+1: k*25*8);
-			err_code = xor(dataFile_block, recFile_block);
-			subplot(5, 8, k); stem(err_code);
-        end
-        suptitle(['error map when PSNR = ', num2str(PSNR(i)), 'dB']);
-	end
+	%if(PSNR(i) >=0 && PSNR(i) <= 5)
+	%	figure;
+	%	for k = 1: 40
+	%		dataFile_block = dataFile((k-1)*25*8+1: k*25*8);
+	%		recFile_block = file_dec_hard2((k-1)*25*8+1: k*25*8);
+	%		err_code = xor(dataFile_block, recFile_block);
+	%		subplot(5, 8, k); stem(err_code);
+    %end
+    %    suptitle(['error map when PSNR = ', num2str(PSNR(i)), 'dB']);
+	%end
 
 	% average of INTERATIONS times
 	error_ratio_hard2(i) = error_ratio_hard2(i)/INTERATIONS; error_ratio_hard3(i) = error_ratio_hard3(i)/INTERATIONS;
@@ -78,11 +79,19 @@ end
 
 % c = jet(4);
 
-% figure;
-% plot(PSNR, err_noEnd_hard2, 'Color', c(1, :)); hold on;
-% plot(PSNR, err_noEnd_hard3, 'Color', c(2, :));
-% xlabel('PSNR(dB)'); ylabel('bit error ratio under hard dicision (no ending)');
-% legend('1/2 efficiency', '1/3 efficiency');
+figure;
+semilogy(PSNR, err_noEnd_hard2, 'Color', c(1, :)); hold on;
+semilogy(PSNR, err_noEnd_hard3, 'Color', c(2, :));
+xlabel('PSNR(dB)'); ylabel('bit error ratio under hard dicision (no ending)');
+legend('1/2 efficiency', '1/3 efficiency');
+
+figure;
+semilogy(PSNR, err_noEnd_hard2, 'Color', c(1, :)); hold on;
+semilogy(PSNR, err_noEnd_hard3, 'Color', c(2, :)); hold on;
+semilogy(PSNR, error_ratio_hard2, 'Color', c(3, :)); hold on;
+semilogy(PSNR, error_ratio_hard3, 'Color', c(4, :));
+xlabel('PSNR(dB)'); ylabel('bit error ratio under hard dicision');
+legend('1/2, no ending', '1/3, no ending', '1/2, with ending', '1/3, with ending');
 
 % figure;
 % plot(PSNR, block_err_hard2, 'Color', c(1, :)); hold on;
@@ -92,13 +101,13 @@ end
 % xlabel('PSNR(dB)'); ylabel('block error ratio');
 % legend('1/2, hard dicision', '1/3, hard dicision', '1/2, soft dicision', '1/3, soft dicision');
 
-% figure;
-% plot(PSNR, error_ratio_hard2, 'Color', c(1, :)); hold on;
-% plot(PSNR, error_ratio_hard3, 'Color', c(2, :)); hold on;
-% plot(PSNR, error_ratio_soft2, 'Color', c(3, :)); hold on;
-% plot(PSNR, error_ratio_soft3, 'Color', c(4, :));
-% xlabel('PSNR(dB)'); ylabel('bit error ratio (without CRC)');
-% legend('1/2, hard dicision', '1/3, hard dicision', '1/2, soft dicision', '1/3, soft dicision');
+figure;
+semilogy(PSNR, error_ratio_hard2, 'Color', c(1, :)); hold on;
+semilogy(PSNR, error_ratio_hard3, 'Color', c(2, :)); hold on;
+semilogy(PSNR, error_ratio_soft2, 'Color', c(3, :)); hold on;
+semilogy(PSNR, error_ratio_soft3, 'Color', c(4, :));
+xlabel('PSNR(dB)'); ylabel('bit error ratio (without CRC)');
+legend('1/2, hard dicision', '1/3, hard dicision', '1/2, soft dicision', '1/3, soft dicision');
 
 % figure;
 % plot(PSNR, fail_ratio_hard2, 'Color', c(1, :)); hold on;
