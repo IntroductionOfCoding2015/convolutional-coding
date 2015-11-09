@@ -7,7 +7,7 @@
 
 # API 设计 & 分工
 
-我们将任务分成了三份，其中我负责完成第二份。
+我们将任务分成了三部分，其中我负责完成第二部分。
 
 ## Part I
 
@@ -101,7 +101,7 @@
 
 ![4PSK-8PSK](4PSK-8PSK.png)
 
-### 符号 ->  电平
+### 符号 > 电平
 
 ```matlab
 function signal = sym_encode(symbols, efficiency)
@@ -126,9 +126,9 @@ function signal = sym_encode(symbols, efficiency)
 end
 ```
 
-### 电平 -> 符号
+### 电平 > 符号
 
-这里实现的电平 -> 符号映射是根据接受信号在复平面上的幅角来判定的。
+这里实现的电平 > 符号映射是根据接受信号在复平面上的幅角来判定的。
 
 可以证明，这种判定方式和以欧拉距离判决等价。
 
@@ -163,7 +163,9 @@ end
 
 选取多项式为 CRC12
 
-x^12 + x^11 + x^3 + x^2 + x + 1
+\[
+  x^12 + x^11 + x^3 + x^2 + x + 1
+\]
 
 ### CRC 编码
 
@@ -230,15 +232,6 @@ function [symbols, err_rate] = crc_decode(crced_symbols, crc_poly, frame_size)
     err_rate = err / frames;
 end
 ```
-
-## 复基带星座图
-
-我们直接使用 `plot` 函数，分别画出了 SNR 为 0dB, 10dB, 20dB, 30dB, 40dB 时的星座图。
-
-![4PSK 星座图](4PSK.png)
-
-![8PSK 星座图](8PSK.png)
-
 
 # 单元测试
 
@@ -340,3 +333,15 @@ assert_decode(signal_3, ...
 ```
 
 # 实验结果
+
+## 复基带星座图
+
+我们直接使用 `plot` 函数，分别画出了 SNR 为 0dB, 10dB, 20dB, 30dB, 40dB 时的星座图。
+
+![4PSK 星座图](4PSK.png)
+
+![8PSK 星座图](8PSK.png)
+
+## 文件传输失败率
+
+![文件传输失败率](failure_rate.png)
