@@ -23,6 +23,7 @@ error_ratio_soft2 = zeros(size(PSNR)); error_ratio_soft3 = zeros(size(PSNR));
 err_noEnd_hard2 = zeros(size(PSNR)); err_noEnd_hard3 = zeros(size(PSNR));
 
 for i = 1: length(PSNR)
+	disp(['PSNR = ' num2str(PSNR(i))]);
 	% encode
 	% has end, has CRC
 	signal_2 = conv_send(dataFile, 1, 2, CRC_poly);
