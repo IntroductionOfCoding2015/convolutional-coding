@@ -15,6 +15,10 @@
 
 我们将任务分成了三部分，其中我负责完成第二部分。
 
+这次作业被托管在了 Github 上
+
+<https://github.com/IntroductionOfCoding2015/convolutional-coding>
+
 ## Part I
 
 ### 编码器 `conv_encode`
