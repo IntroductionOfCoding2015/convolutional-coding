@@ -18,7 +18,7 @@ for i = 1:length(signal)
 			for symbol = [0,1]
 				input = [tails(k,:), symbol];
 				output = mod(input * A,2);
-				idx = find(ismember(tails,input(end-2:end),'rows'));
+                idx = input(2)*4+input(3)*2+input(4)+1;
 				d = conv_dis(output,signal(i),efficiency,hard);
 				if dis(idx) < 0
 					dis(idx) = prev_dis(k) + d;
